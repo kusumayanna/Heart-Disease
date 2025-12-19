@@ -37,7 +37,7 @@ stderr_logfile=/dev/stderr\n\
 stderr_logfile_maxbytes=0\n\
 \n\
 [program:streamlit]\n\
-command=streamlit run app.py --server.port=8501 --server.address=0.0.0.0\n\
+command=sh -c "streamlit run app.py --server.port=${PORT:-8501} --server.address=0.0.0.0"\n\
 directory=/app/streamlit\n\
 environment=API_URL="http://localhost:8000"\n\
 autostart=true\n\
@@ -47,12 +47,16 @@ stdout_logfile_maxbytes=0\n\
 stderr_logfile=/dev/stderr\n\
 stderr_logfile_maxbytes=0' > /etc/supervisor/conf.d/supervisord.conf
 
-# Expose Streamlit port (Railway will map this)
+# Expose Streamlit port
 EXPOSE 8501
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+# Health check for Streamlit
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 --start-period=60s \
   CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
+# Copy and make startup script executable
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 # Start supervisor to run both services
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/start.sh"]
