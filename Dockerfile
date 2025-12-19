@@ -54,9 +54,5 @@ EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=10s --retries=5 --start-period=60s \
   CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Copy and make startup script executable
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
 # Start supervisor to run both services
-CMD ["/start.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
