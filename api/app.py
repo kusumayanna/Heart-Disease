@@ -29,7 +29,7 @@ from db_utils import get_database_info
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
-MODEL_PATH = Path("/app/models/global_best_model_optuna.pkl")
+MODEL_PATH = Path("/app/api/models/global_best_model_optuna.pkl")
 
 app = FastAPI(
     title="Heart Disease Classification API",
